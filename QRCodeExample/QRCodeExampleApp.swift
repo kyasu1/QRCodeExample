@@ -6,12 +6,19 @@
 //
 
 import SwiftUI
+import ComposableArchitecture
 
 @main
 struct QRCodeExampleApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(
+                store: Store(initialState: AppState(), reducer: appReducer, environment: AppEnvironment(
+                    avFoundationVM: AVFoundationVM()
+                ))
+            )
         }
     }
 }

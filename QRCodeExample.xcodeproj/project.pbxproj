@@ -3,10 +3,14 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		374228662522D16000C8199B /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 374228652522D16000C8199B /* ComposableArchitecture */; };
+		374228682522D16000C8199B /* ComposableCoreMotion in Frameworks */ = {isa = PBXBuildFile; productRef = 374228672522D16000C8199B /* ComposableCoreMotion */; };
+		3742286A2522D16000C8199B /* ComposableCoreLocation in Frameworks */ = {isa = PBXBuildFile; productRef = 374228692522D16000C8199B /* ComposableCoreLocation */; };
+		3742286D2522DFD900C8199B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3742286C2522DFD900C8199B /* AppDelegate.swift */; };
 		376FB8E0252200260024CDA8 /* QRCodeExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376FB8DF252200260024CDA8 /* QRCodeExampleApp.swift */; };
 		376FB8E2252200260024CDA8 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376FB8E1252200260024CDA8 /* ContentView.swift */; };
 		376FB8E4252200270024CDA8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 376FB8E3252200270024CDA8 /* Assets.xcassets */; };
@@ -16,6 +20,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3742286C2522DFD900C8199B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		376FB8DC252200260024CDA8 /* QRCodeExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QRCodeExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		376FB8DF252200260024CDA8 /* QRCodeExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeExampleApp.swift; sourceTree = "<group>"; };
 		376FB8E1252200260024CDA8 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -31,6 +36,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3742286A2522D16000C8199B /* ComposableCoreLocation in Frameworks */,
+				374228682522D16000C8199B /* ComposableCoreMotion in Frameworks */,
+				374228662522D16000C8199B /* ComposableArchitecture in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -57,6 +65,7 @@
 			isa = PBXGroup;
 			children = (
 				376FB8DF252200260024CDA8 /* QRCodeExampleApp.swift */,
+				3742286C2522DFD900C8199B /* AppDelegate.swift */,
 				376FB8E1252200260024CDA8 /* ContentView.swift */,
 				376FB8E3252200270024CDA8 /* Assets.xcassets */,
 				376FB8E8252200270024CDA8 /* Info.plist */,
@@ -91,6 +100,11 @@
 			dependencies = (
 			);
 			name = QRCodeExample;
+			packageProductDependencies = (
+				374228652522D16000C8199B /* ComposableArchitecture */,
+				374228672522D16000C8199B /* ComposableCoreMotion */,
+				374228692522D16000C8199B /* ComposableCoreLocation */,
+			);
 			productName = QRCodeExample;
 			productReference = 376FB8DC252200260024CDA8 /* QRCodeExample.app */;
 			productType = "com.apple.product-type.application";
@@ -118,6 +132,9 @@
 				Base,
 			);
 			mainGroup = 376FB8D3252200260024CDA8;
+			packageReferences = (
+				374228642522D16000C8199B /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
+			);
 			productRefGroup = 376FB8DD252200260024CDA8 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -147,6 +164,7 @@
 				376FB8F3252214430024CDA8 /* CALayerView.swift in Sources */,
 				376FB8E2252200260024CDA8 /* ContentView.swift in Sources */,
 				376FB8F02522141B0024CDA8 /* AVFoundationVM.swift in Sources */,
+				3742286D2522DFD900C8199B /* AppDelegate.swift in Sources */,
 				376FB8E0252200260024CDA8 /* QRCodeExampleApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -336,6 +354,35 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		374228642522D16000C8199B /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.8.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		374228652522D16000C8199B /* ComposableArchitecture */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 374228642522D16000C8199B /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
+			productName = ComposableArchitecture;
+		};
+		374228672522D16000C8199B /* ComposableCoreMotion */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 374228642522D16000C8199B /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
+			productName = ComposableCoreMotion;
+		};
+		374228692522D16000C8199B /* ComposableCoreLocation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 374228642522D16000C8199B /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
+			productName = ComposableCoreLocation;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 376FB8D4252200260024CDA8 /* Project object */;
 }
