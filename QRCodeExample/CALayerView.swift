@@ -27,6 +27,8 @@ let reducer = Reducer<State, Action, Void> { state, action, _ in
     }
 }
 struct CALayerView: UIViewControllerRepresentable {
+    let store: Store<State, Action>
+    
     func makeCoordinator() -> Coordinator {
         Coordinator(code: nil)
     }

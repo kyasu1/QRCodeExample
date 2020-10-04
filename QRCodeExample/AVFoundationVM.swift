@@ -84,19 +84,4 @@ class AVFoundationVM: NSObject, AVCaptureMetadataOutputObjectsDelegate, Observab
             self.value = nil
         }
     }
-
-    private func getImageFromSampleBuffer (buffer: CMSampleBuffer) -> UIImage? {
-        if let pixelBuffer = CMSampleBufferGetImageBuffer(buffer) {
-            let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
-            let context = CIContext()
-
-            let imageRect = CGRect(x: 0, y: 0, width: CVPixelBufferGetWidth(pixelBuffer), height: CVPixelBufferGetHeight(pixelBuffer))
-
-            if let image = context.createCGImage(ciImage, from: imageRect) {
-                return UIImage(cgImage: image, scale: UIScreen.main.scale, orientation: .right)
-            }
-        }
-
-        return nil
-    }
 }

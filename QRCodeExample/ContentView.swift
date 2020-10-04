@@ -27,7 +27,7 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment> { state, action, e
     switch action {
     case .clickedScanCodeButton:
         state.isScanning = true
-        return environment.avFoundationVM.takePhoto()
+        return .none
     case .clickedCancelScan:
         state.isScanning = false
         return .none
@@ -38,7 +38,6 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment> { state, action, e
 }
 
 struct ContentView: View {
-    @Environment(\.avFoundationVM) var avFoundationVM
     let store: Store<AppState, AppAction>
     
     var body: some View {
