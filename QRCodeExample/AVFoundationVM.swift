@@ -2,9 +2,7 @@ import UIKit
 import Combine
 import AVFoundation
 
-class AVFoundationVM: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureMetadataOutputObjectsDelegate, ObservableObject {
-    ///撮影した画像
-    @Published var image: UIImage?
+class AVFoundationVM: NSObject, AVCaptureMetadataOutputObjectsDelegate, ObservableObject {
     ///プレビュー用レイヤー
     var previewLayer:AVCaptureVideoPreviewLayer!
 
@@ -59,9 +57,6 @@ class AVFoundationVM: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, AV
         }
 
         captureSession.commitConfiguration()
-
-        let queue = DispatchQueue(label: "FromF.github.com.AVFoundationSwiftUI.AVFoundation")
-        dataOutput.setSampleBufferDelegate(self, queue: queue)
     }
 
     func startSession() {
@@ -74,17 +69,6 @@ class AVFoundationVM: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, AV
         captureSession.stopRunning()
     }
 
-    // MARK: - AVCaptureVideoDataOutputSampleBufferDelegate
-    func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        if _takePhoto {
-            _takePhoto = false
-            if let image = getImageFromSampleBuffer(buffer: sampleBuffer) {
-                DispatchQueue.main.async {
-                    self.image = image
-                }
-            }
-        }
-    }
     
     func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
         if metadataObjects.count > 0 {

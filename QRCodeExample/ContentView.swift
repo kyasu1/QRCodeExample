@@ -10,10 +10,12 @@ import ComposableArchitecture
 
 struct AppState: Equatable {
     var itemCode: String?
+    var isScanning: Bool
 }
 
 enum AppAction: Equatable {
     case clickedScanCodeButton
+    case clickedCancelScan
     case scannedCode
 }
 
@@ -24,8 +26,11 @@ struct AppEnvironment {
 let appReducer = Reducer<AppState, AppAction, AppEnvironment> { state, action, environment in
     switch action {
     case .clickedScanCodeButton:
+        state.isScanning = true
         return environment.avFoundationVM.takePhoto()
-
+    case .clickedCancelScan:
+        state.isScanning = false
+        return .none
     case .scannedCode:
         state.itemCode = nil
         return .none
@@ -39,7 +44,7 @@ struct ContentView: View {
     var body: some View {
         WithViewStore(self.store) { viewStore in
             VStack {
-                if viewStore.itemCode != nil {
+                if viewStore.isScanning == false {
                     VStack() {
                         Text("QR Code is ")
                         Text("\(viewStore.itemCode!)")
@@ -60,10 +65,6 @@ struct ContentView: View {
                     ZStack(alignment: .bottom) {
                         CALayerView(caLayer: avFoundationVM.previewLayer)
                         
-                        if let rect = self.avFoundationVM.rect {
-                            Path.init(rect)
-                                .stroke(Color.yellow, lineWidth: 4)
-                        }
                         Button(action: {
                             viewStore.send(.clickedScanCodeButton)
                         }) {
