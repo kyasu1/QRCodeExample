@@ -10,13 +10,14 @@ import ComposableArchitecture
 
 struct AppState: Equatable {
     var itemCode: String?
-    var isScanning: Bool
+    var isScanning: Bool = false
+    var scanner: ScanState
 }
 
 enum AppAction: Equatable {
     case clickedScanCodeButton
     case clickedCancelScan
-    case scannedCode
+    case scanAction(action: ScanAction)
 }
 
 struct AppEnvironment {
@@ -31,8 +32,9 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment> { state, action, e
     case .clickedCancelScan:
         state.isScanning = false
         return .none
-    case .scannedCode:
-        state.itemCode = nil
+    case let .scanAction(action: .catchedCode(code)):
+        state.itemCode = code
+        state.isScanning = false
         return .none
     }
 }
@@ -44,9 +46,15 @@ struct ContentView: View {
         WithViewStore(self.store) { viewStore in
             VStack {
                 if viewStore.isScanning == false {
-                    VStack() {
-                        Text("QR Code is ")
-                        Text("\(viewStore.itemCode!)")
+                    if let itemCode = viewStore.itemCode {
+                        VStack() {
+                            Text("QR Code is ")
+                            Text("\(itemCode)")
+                        }
+                    } else {
+                        VStack() {
+                            Text("NO QR CODE")
+                        }
                     }
                     
                     Button(action: {
@@ -62,10 +70,10 @@ struct ContentView: View {
                     Spacer()
                     
                     ZStack(alignment: .bottom) {
-                        CALayerView(caLayer: avFoundationVM.previewLayer)
+                        CALayerView(store: self.store.scope(state: {$0.scanner }, action: AppAction.scanAction))
                         
                         Button(action: {
-                            viewStore.send(.clickedScanCodeButton)
+                            viewStore.send(.clickedCancelScan)
                         }) {
                             Image(systemName: "xmark.circle.fill")
                                 .renderingMode(.original)
@@ -73,11 +81,6 @@ struct ContentView: View {
                                 .frame(width: 80, height: 80, alignment: .center)
                         }
                         .padding(.bottom, 100.0)
-                        
-                    }.onAppear {
-                        self.avFoundationVM.startSession()
-                    }.onDisappear {
-                        self.avFoundationVM.endSession()
                     }
                     
                     Spacer()
@@ -145,7 +148,7 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             ContentView(
-                store: Store(initialState: AppState(), reducer: appReducer, environment: AppEnvironment(
+                store: Store(initialState: AppState(scanner: ScanState(code: nil)), reducer: appReducer, environment: AppEnvironment(
                     avFoundationVM: AVFoundationVM()
                 ))
             )
