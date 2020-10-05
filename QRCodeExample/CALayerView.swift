@@ -11,7 +11,7 @@ import Combine
 import ComposableArchitecture
 
 struct ScanState: Equatable {
-    var code: String?
+    var code: String? = nil
 }
 
 enum ScanAction: Equatable {
@@ -29,7 +29,7 @@ let reducer = Reducer<ScanState, ScanAction, Void> { state, action, _ in
 struct CALayerView: UIViewControllerRepresentable {
     let store: Store<ScanState, ScanAction>
     let viewStore: ViewStore<ScanState, ScanAction>
-
+    
     init(store: Store<ScanState, ScanAction>) {
         self.store = store
         self.viewStore = ViewStore(self.store)
@@ -42,15 +42,10 @@ struct CALayerView: UIViewControllerRepresentable {
     
     func makeUIViewController(context: UIViewControllerRepresentableContext<CALayerView>) -> UIViewController {
         let viewController = AVFoundationViewController(delegate: context.coordinator)
-        
-//        viewController.view.layer.addSublayer(caLayer)
-//        caLayer.frame = viewController.view.layer.frame
-        
         return viewController
     }
     
     func updateUIViewController(_ uiViewController: UIViewController, context: UIViewControllerRepresentableContext<CALayerView>) {
-//        caLayer.frame = uiViewController.view.layer.frame
     }
     
     class Coordinator: NSObject, AVCaptureMetadataOutputObjectsDelegate {
@@ -66,6 +61,8 @@ struct CALayerView: UIViewControllerRepresentable {
             if metadataObjects.count > 0 {
                 for metadata in metadataObjects as! [AVMetadataMachineReadableCodeObject] {
                     if metadata.type == .qr {
+                        self.code.wrappedValue = .some(metadata.stringValue!)
+                    } else if metadata.type == .ean13 {
                         self.code.wrappedValue = .some(metadata.stringValue!)
                     }
                 }
@@ -113,7 +110,7 @@ struct CALayerView: UIViewControllerRepresentable {
             let metadataOutput = AVCaptureMetadataOutput()
             captureSession.addOutput(metadataOutput)
             metadataOutput.setMetadataObjectsDelegate(self.delegate, queue: DispatchQueue.main)
-            metadataOutput.metadataObjectTypes = [.qr]
+            metadataOutput.metadataObjectTypes = [.qr, .ean13]
             
             let dataOutput = AVCaptureVideoDataOutput()
             dataOutput.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String:kCVPixelFormatType_32BGRA]
@@ -137,6 +134,7 @@ struct CALayerView: UIViewControllerRepresentable {
         }
         
         override public func viewWillDisappear(_ animated: Bool) {
+            super.viewWillDisappear(animated)
             if !captureSession.isRunning { return }
             captureSession.stopRunning()
         }

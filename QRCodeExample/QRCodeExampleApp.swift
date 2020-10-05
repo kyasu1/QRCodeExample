@@ -15,7 +15,7 @@ struct QRCodeExampleApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView(
-                store: Store(initialState: AppState(scanner: ScanState(code: nil)), reducer: appReducer, environment: AppEnvironment(
+                store: Store(initialState: AppState(itemCode: .notAsked, scanner: ScanState(code: nil)), reducer: appReducer, environment: AppEnvironment(
                     avFoundationVM: AVFoundationVM()
                 ))
             )

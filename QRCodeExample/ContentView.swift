@@ -9,9 +9,15 @@ import SwiftUI
 import ComposableArchitecture
 
 struct AppState: Equatable {
-    var itemCode: String?
-    var isScanning: Bool = false
+    var itemCode: ItemCode<String> = .notAsked
     var scanner: ScanState
+}
+
+enum ItemCode<Data: Equatable>: Equatable {
+    case notAsked
+    case loading
+    case success(Data)
+    case failure
 }
 
 enum AppAction: Equatable {
@@ -27,14 +33,13 @@ struct AppEnvironment {
 let appReducer = Reducer<AppState, AppAction, AppEnvironment> { state, action, environment in
     switch action {
     case .clickedScanCodeButton:
-        state.isScanning = true
+        state.itemCode = .loading
         return .none
     case .clickedCancelScan:
-        state.isScanning = false
+        state.itemCode = .notAsked
         return .none
     case let .scanAction(action: .catchedCode(code)):
-        state.itemCode = code
-        state.isScanning = false
+        state.itemCode = .success(code!)
         return .none
     }
 }
@@ -42,31 +47,28 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment> { state, action, e
 struct ContentView: View {
     let store: Store<AppState, AppAction>
     
+
+    
     var body: some View {
         WithViewStore(self.store) { viewStore in
+            let button =                         Button(action: {
+                viewStore.send(.clickedScanCodeButton)
+            }) {
+                Image(systemName: "camera.circle.fill")
+                    .renderingMode(.original)
+                    .resizable()
+                    .frame(width: 80, height: 80, alignment: .center)
+            }
+            .padding(.bottom, 100.0)
+            
             VStack {
-                if viewStore.isScanning == false {
-                    if let itemCode = viewStore.itemCode {
-                        VStack() {
-                            Text("QR Code is ")
-                            Text("\(itemCode)")
-                        }
-                    } else {
-                        VStack() {
-                            Text("NO QR CODE")
-                        }
+                switch viewStore.itemCode {
+                case .notAsked:
+                    VStack() {
+                        Text("READY TO READ")
+                        button
                     }
-                    
-                    Button(action: {
-                        viewStore.send(.clickedScanCodeButton)
-                    }) {
-                        Image(systemName: "camera.circle.fill")
-                            .renderingMode(.original)
-                            .resizable()
-                            .frame(width: 80, height: 80, alignment: .center)
-                    }
-                    .padding(.bottom, 100.0)
-                } else {
+                case .loading:
                     Spacer()
                     
                     ZStack(alignment: .bottom) {
@@ -84,63 +86,22 @@ struct ContentView: View {
                     }
                     
                     Spacer()
+                case let .success(itemCode):
+                    VStack() {
+                        Text("Code is ")
+                        Text("\(itemCode)")
+                        button
+                    }
+                case .failure:
+                    VStack() {
+                        Text("Error !")
+                        Text("Something went wrong")
+                        button
+                    }
                 }
             }
             
         }
-        
-        //            if avFoundationVM.image == nil {
-        //                Spacer()
-        //
-        //                ZStack(alignment: .bottom) {
-        //                    CALayerView(caLayer: avFoundationVM.previewLayer)
-        //
-        //                    if let rect = avFoundationVM.rect {
-        //                        Path.init(rect)
-        //                            .stroke(Color.yellow, lineWidth: 4)
-        //                    }
-        //
-        //                    Button(action: {
-        //                        self.avFoundationVM.takePhoto()
-        //                    }) {
-        //                        Image(systemName: "camera.circle.fill")
-        //                        .renderingMode(.original)
-        //                        .resizable()
-        //                        .frame(width: 80, height: 80, alignment: .center)
-        //                    }
-        //                    .padding(.bottom, 100.0)
-        //                }.onAppear {
-        //                    self.avFoundationVM.startSession()
-        //                }.onDisappear {
-        //                    self.avFoundationVM.endSession()
-        //                }
-        //
-        //                Spacer()
-        //            } else {
-        //                ZStack(alignment: .topLeading) {
-        //                    VStack {
-        //                        Spacer()
-        //
-        //                        Image(uiImage: avFoundationVM.image!)
-        //                        .resizable()
-        //                        .scaledToFill()
-        //                        .aspectRatio(contentMode: .fit)
-        //
-        //                        Spacer()
-        //                    }
-        //                    Button(action: {
-        //                        self.avFoundationVM.image = nil
-        //                    }) {
-        //                            Image(systemName: "xmark.circle.fill")
-        //                            .renderingMode(.original)
-        //                            .resizable()
-        //                            .frame(width: 30, height: 30, alignment: .center)
-        //                            .foregroundColor(.white)
-        //                            .background(Color.gray)
-        //                    }
-        //                    .frame(width: 80, height: 80, alignment: .center)
-        //                }
-        //            }
     }
 }
 
@@ -148,7 +109,7 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             ContentView(
-                store: Store(initialState: AppState(scanner: ScanState(code: nil)), reducer: appReducer, environment: AppEnvironment(
+                store: Store(initialState: AppState(scanner: ScanState()), reducer: appReducer, environment: AppEnvironment(
                     avFoundationVM: AVFoundationVM()
                 ))
             )
